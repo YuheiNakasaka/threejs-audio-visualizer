@@ -1,11 +1,4 @@
 window.onload = function() {
-  // var c = document.getElementById('canvas');
-  // var cw;
-  // var ch;
-  // c.width = cw = window.innerWidth;
-  // c.height = ch = window.innerHeight;
-  // var ctx = c.getContext('2d');
-
   var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   var Loader = function(url) {
     this.url = url;
@@ -52,24 +45,6 @@ window.onload = function() {
     this.render()
   };
 
-  Visualizer.prototype.draw = function() {
-    this.analyserNode.smoothingTimeConstant = 0.5;
-    this.analyserNode.fftSize = 2048;
-    this.analyserNode.getByteTimeDomainData(this.times);
-    var barWidth = cw / this.analyserNode.frequencyBinCount;
-    ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-    ctx.fillRect(0, 0, cw, ch);
-    for (var i = 0; i < this.analyserNode.frequencyBinCount; ++i) {
-      var value = this.times[i];
-      var percent = value / 255;
-      var height = ch * percent;
-      var offset = ch - height;
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(i * barWidth, offset, barWidth, 2);
-    }
-    window.requestAnimationFrame(this.draw.bind(this));
-  };
-
   Visualizer.prototype.render = function () {
     var scene, camera, renderer
     var geometry, material, mesh
@@ -85,9 +60,6 @@ window.onload = function() {
     renderer.setClearColor(new THREE.Color(0x000000));
     renderer.setSize(window.innerWidth, window.innerHeight)
 
-    // var axes = new THREE.AxisHelper(20)
-    // scene.add(axes)
-
     createParticles()
 
     document.getElementById('wrap').appendChild(renderer.domElement)
@@ -102,11 +74,10 @@ window.onload = function() {
       for (var i = 0; i < that.analyserNode.frequencyBinCount; ++i) {
         var value = that.times[i];
         var child = scene.children[i]
-        // child.scale.x = (value / 255) * 6
-        // child.scale.y = (value / 255) * 6
-        // child.scale.z = (value / 255) * 6
-        child.position.x = (value-128)
-        // if (child.position.x > 100) child.position.x = orgPosition[i][0]
+        child.scale.x = (value / 255) * 4
+        child.scale.y = (value / 255) * 4
+        child.scale.z = (value / 255) * 4
+        child.position.z = (value-128)
       }
       requestAnimationFrame(animate)
       renderer.render(scene, camera)
@@ -133,12 +104,11 @@ window.onload = function() {
     }
 
     function createParticles () {
-      var material = new THREE.SpriteMaterial()
+      var material = new THREE.SpriteMaterial({color: 0xe0ffff})
       for (var x = -8; x < 8; x++) {
         for (var y = -8; y < 8; y++) {
           var sprite = new THREE.Sprite(material)
           sprite.position.set(x * 10, y * 10, 5)
-          orgPosition.push([x * 10, y * 10, 5])
           scene.add(sprite)
         }
       }
