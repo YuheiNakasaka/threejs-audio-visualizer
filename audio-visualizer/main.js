@@ -48,8 +48,7 @@ window.onload = function() {
     this.times = new Uint8Array(this.analyserNode.frequencyBinCount);
     this.sourceNode.connect(this.analyserNode);
     this.analyserNode.connect(audioCtx.destination);
-    // this.sourceNode.start(0);
-    // this.draw();
+    this.sourceNode.start(0);
     this.render()
   };
 
@@ -74,30 +73,42 @@ window.onload = function() {
   Visualizer.prototype.render = function () {
     var scene, camera, renderer
     var geometry, material, mesh
+    var orgPosition = []
     scene = new THREE.Scene()
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 5000 );
-    camera.position.x = 30
-    camera.position.y = 30
-    camera.position.z = 30
+    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+    camera.position.x = 0
+    camera.position.y = 0
+    camera.position.z = 100
     camera.lookAt(scene.position)
 
     renderer = new THREE.WebGLRenderer()
     renderer.setClearColor(new THREE.Color(0x000000));
     renderer.setSize(window.innerWidth, window.innerHeight)
 
-    var axes = new THREE.AxisHelper(20)
-    scene.add(axes)
+    // var axes = new THREE.AxisHelper(20)
+    // scene.add(axes)
 
-    createBox()
+    createParticles()
 
     document.getElementById('wrap').appendChild(renderer.domElement)
     renderer.render(scene, camera)
 
+    var that = this
     animate()
     function animate () {
+      that.analyserNode.smoothingTimeConstant = 0.5;
+      that.analyserNode.fftSize = 512;
+      that.analyserNode.getByteTimeDomainData(that.times);
+      for (var i = 0; i < that.analyserNode.frequencyBinCount; ++i) {
+        var value = that.times[i];
+        var child = scene.children[i]
+        // child.scale.x = (value / 255) * 6
+        // child.scale.y = (value / 255) * 6
+        // child.scale.z = (value / 255) * 6
+        child.position.x = (value-128)
+        // if (child.position.x > 100) child.position.x = orgPosition[i][0]
+      }
       requestAnimationFrame(animate)
-      // mesh.position.x += 0.1
-      mesh.rotation.y += 0.1
       renderer.render(scene, camera)
     }
 
@@ -119,6 +130,18 @@ window.onload = function() {
       mesh.position.y = 0
       mesh.position.z = 0
       scene.add(mesh)
+    }
+
+    function createParticles () {
+      var material = new THREE.SpriteMaterial()
+      for (var x = -8; x < 8; x++) {
+        for (var y = -8; y < 8; y++) {
+          var sprite = new THREE.Sprite(material)
+          sprite.position.set(x * 10, y * 10, 5)
+          orgPosition.push([x * 10, y * 10, 5])
+          scene.add(sprite)
+        }
+      }
     }
   }
 
