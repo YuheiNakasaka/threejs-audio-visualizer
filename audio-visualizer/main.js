@@ -74,10 +74,33 @@ window.onload = function() {
       for (var i = 0; i < that.analyserNode.frequencyBinCount; ++i) {
         var value = that.times[i];
         var child = scene.children[i]
-        child.scale.x = (value / 255) * 4
-        child.scale.y = (value / 255) * 4
-        child.scale.z = (value / 255) * 4
-        child.position.z = (value-128)
+        if (value > 180) {
+          child.material.color.r = 255
+          child.material.color.g = 0
+          child.material.color.b = 0
+          child.scale.x = (value / 255) * 10
+          child.scale.y = (value / 255) * 10
+          child.scale.z = (value / 255) * 10
+        } else if (180 > value && value > 140) {
+          child.material.color.r = 0
+          child.material.color.g = 255
+          child.material.color.b = 0
+          child.scale.x = (value / 255) * 3
+          child.scale.y = (value / 255) * 3
+          child.scale.z = (value / 255) * 3
+        } else if (140 > value && value > 100) {
+          child.material.color.r = 0
+          child.material.color.g = 0
+          child.material.color.b = 255
+          child.scale.x = (value / 255) * 2
+          child.scale.y = (value / 255) * 2
+          child.scale.z = (value / 255) * 2
+        } else {
+          child.material.color.r = 255
+          child.material.color.g = 255
+          child.material.color.b = 255
+        }
+        // child.position.z = (value-128)
       }
       requestAnimationFrame(animate)
       renderer.render(scene, camera)
@@ -105,6 +128,11 @@ window.onload = function() {
 
     function createParticles () {
       var material = new THREE.SpriteMaterial({color: 0xe0ffff})
+      // for (var i = -128; i < 128; i++) {
+      //   var sprite = new THREE.Sprite(material)
+      //   sprite.position.set(i, 0, 0)
+      //   scene.add(sprite)
+      // }
       for (var x = -8; x < 8; x++) {
         for (var y = -8; y < 8; y++) {
           var sprite = new THREE.Sprite(material)
