@@ -147,6 +147,6 @@ window.onload = function() {
 
   setUpRAF();
   // sound from https://soundcloud.com/smokezofficial/turn-down-for-what-parisian-version
-  var loader = new Loader('./DJSnake-Turn-Down-for-What-(Parisian Version)-(no-rights-reserved!)-149855329.mp3')
+  var loader = new Loader('./DJSnake-Turn-Down-for-What-(ParisianVersion)-(no-rights-reserved!)-149855329.mp3')
   loader.loadBuffer()
 }
