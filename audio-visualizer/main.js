@@ -25,7 +25,6 @@ window.onload = function() {
       license: 'cc-by-sa'
     }).then(function(tracks) {
       console.log(tracks);
-      console.log(Math.floor(Math.random()*(tracks.length-1)))
       var track = tracks[Math.floor(Math.random()*(tracks.length-1))]
       ee.emitEvent('completeSearchTrack', [track])
     });
@@ -71,10 +70,25 @@ window.onload = function() {
     this.sourceNode.buffer = buffer;
     this.analyserNode = audioCtx.createAnalyser();
     this.times = new Uint8Array(this.analyserNode.frequencyBinCount);
-    this.sourceNode.connect(this.analyserNode);
-    this.analyserNode.connect(audioCtx.destination);
-    this.sourceNode.start(0);
-    this.render()
+
+    if (isSP() === true) {
+      console.log('sp');
+      var playSp = document.getElementById('play-sp');
+      playSp.setAttribute('style', 'display: block;')
+      playSp.addEventListener('touchstart', function(){
+        playSp.setAttribute('style', 'display: none;')
+        visualizer.sourceNode.connect(visualizer.analyserNode);
+        visualizer.analyserNode.connect(audioCtx.destination);
+        visualizer.sourceNode.start(0);
+        visualizer.render()
+      })
+    } else {
+      console.log('pc');
+      this.sourceNode.connect(this.analyserNode);
+      this.analyserNode.connect(audioCtx.destination);
+      this.sourceNode.start(0);
+      this.render()
+    }
 
     this.sourceNode.onended = function() {
       console.log('ended');
@@ -153,6 +167,17 @@ window.onload = function() {
           }
         }
       }
+    }
+  }
+
+  function isSP () {
+    if ((navigator.userAgent.indexOf('iPhone') > 0 &&
+         navigator.userAgent.indexOf('iPad') == -1) ||
+         navigator.userAgent.indexOf('iPod') > 0 ||
+         navigator.userAgent.indexOf('Android') > 0) {
+      return true;
+    } else {
+      return false;
     }
   }
 
