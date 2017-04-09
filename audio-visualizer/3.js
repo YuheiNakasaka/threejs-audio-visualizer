@@ -6,37 +6,33 @@ window.onload = function() {
     this.url = url;
   };
 
-  Loader.prototype.loadBuffer = function() {
-    var loader, request;
-    loader = this;
-    request = new XMLHttpRequest();
-    request.open('GET', this.url, true);
-    request.responseType = 'arraybuffer';
-
-    request.onload = function() {
-      audioCtx.decodeAudioData(this.response, function(buffer) {
-        if (!buffer) {
-          console.log('error');
-          return;
-        }
-        loader.playSound(buffer);
-      }, function(error) {
-        console.log('decodeAudioData error');
-      });
-    };
-
-    request.onerror = function() {
-      console.log('Loader: XHR error');
-    };
-
-    request.send();
-  };
-
   Loader.prototype.playSound = function(buffer) {
     if (visualizer !== undefined) {
       ee.emitEvent('publish')
     } else {
-      visualizer = new Visualizer(buffer);
+      var loader, request;
+      loader = this;
+      request = new XMLHttpRequest();
+      request.open('GET', this.url, true);
+      request.responseType = 'arraybuffer';
+
+      request.onload = function() {
+        audioCtx.decodeAudioData(this.response, function(buffer) {
+          if (!buffer) {
+            console.log('error');
+            return;
+          }
+          visualizer = new Visualizer(buffer);
+        }, function(error) {
+          console.log('decodeAudioData error');
+        });
+      };
+
+      request.onerror = function() {
+        console.log('Loader: XHR error');
+      };
+
+      request.send();
     }
   };
 
@@ -165,6 +161,6 @@ window.onload = function() {
   document.getElementById('play').addEventListener('click', function(){
     // sound from https://soundcloud.com/smokezofficial/turn-down-for-what-parisian-version
     var loader = new Loader('./DJSnake-Turn-Down-for-What-(ParisianVersion)-(no-rights-reserved!)-149855329.mp3')
-    loader.loadBuffer()
+    loader.playSound()
   })
 }
