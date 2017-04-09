@@ -1,6 +1,7 @@
 window.onload = function() {
   var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  var state = 0;
+  var visualizer;
+  var ee = new EventEmitter();
   var Loader = function(url) {
     this.url = url;
   };
@@ -32,27 +33,34 @@ window.onload = function() {
   };
 
   Loader.prototype.playSound = function(buffer) {
-    var visualizer = new Visualizer(buffer);
+    if (visualizer !== undefined) {
+      ee.emitEvent('publish')
+    } else {
+      visualizer = new Visualizer(buffer);
+    }
   };
 
   var Visualizer = function(buffer) {
-    var visualizer = this
+    var that = this
     this.sourceNode = audioCtx.createBufferSource();
     this.sourceNode.buffer = buffer;
     this.analyserNode = audioCtx.createAnalyser();
     this.times = new Uint8Array(this.analyserNode.frequencyBinCount);
 
-    if (isSP() === true && state === 2) {
+    if (isSP() === true) {
       console.log('sp');
-      document.getElementById('info').setAttribute('style','display: none')
-      visualizer.sourceNode.connect(visualizer.analyserNode);
-      visualizer.analyserNode.connect(audioCtx.destination);
-      visualizer.sourceNode.start(0);
-      visualizer.render()
+      ee.addListener('publish', function(){
+        document.getElementById('info').setAttribute('style','display: none')
+        that.sourceNode.connect(that.analyserNode);
+        that.analyserNode.connect(audioCtx.destination);
+        that.sourceNode.start(0);
+        that.render()
+      })
     }
 
     if (isSP() === false) {
       console.log('pc');
+      document.getElementById('info').setAttribute('style','display: none')
       this.sourceNode.connect(this.analyserNode);
       this.analyserNode.connect(audioCtx.destination);
       this.sourceNode.start(0);
@@ -121,26 +129,6 @@ window.onload = function() {
       renderer.render(scene, camera)
     }
 
-    function createBox () {
-      var box = new THREE.BoxGeometry(10, 10, 10)
-      var boxMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF })
-      mesh = new THREE.Mesh(box, boxMaterial)
-      mesh.position.x = 0
-      mesh.position.y = 0
-      mesh.position.z = 0
-      scene.add(mesh)
-    }
-
-    function createSphere () {
-      var sphere = new THREE.SphereGeometry(10, 10, 10)
-      var sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xFFFFFF})
-      mesh = new THREE.Mesh(sphere, sphereMaterial)
-      mesh.position.x = 0
-      mesh.position.y = 0
-      mesh.position.z = 0
-      scene.add(mesh)
-    }
-
     function createParticles () {
       var material = new THREE.SpriteMaterial({color: 0xe0ffff})
       for (var x = -8; x < 8; x++) {
@@ -179,6 +167,5 @@ window.onload = function() {
     // sound from https://soundcloud.com/smokezofficial/turn-down-for-what-parisian-version
     var loader = new Loader('./DJSnake-Turn-Down-for-What-(ParisianVersion)-(no-rights-reserved!)-149855329.mp3')
     loader.loadBuffer()
-    state += 1
   })
 }
