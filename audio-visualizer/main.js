@@ -13,7 +13,7 @@ window.onload = function() {
   };
 
   Loader.prototype.fetchTrack = function() {
-    var tracklists = ["anime", "rock", "dance", "dubstep", "house", "metal"];
+    var tracklists = ["anime", 'Alternative Rock', 'Ambient', 'Classical', 'Country', 'Dance & EDM', 'Dancehall', 'Deep House', 'Disco', 'Drum & Bass', 'Dubstep', 'Electronic', 'Folk & Singer-Songwriter', 'Hip-hop & Rap', 'House', 'Indie', 'Jazz & Blues', 'Latin', 'Metal', 'Piano', 'Pop', 'R&B & Soul', 'Reggae', 'Reggaeton', 'Rock', 'Soundtrack', 'Techno', 'Trance', 'Trap', 'Triphop', 'World'];
     var genre = tracklists[ Math.floor( Math.random() * (tracklists.length - 1) ) ];
 
     SC.initialize({
@@ -174,6 +174,7 @@ window.onload = function() {
   init();
   document.getElementById('play').addEventListener('click', function(){
     document.getElementById('header-wrap').setAttribute('style', 'display:none;')
+    document.getElementById('footer').setAttribute('style', 'display:none;')
     document.getElementById('play').innerHTML = '<img src="loading.svg">'
     loader = new Loader()
     loader.fetchTrack()
