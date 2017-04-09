@@ -45,8 +45,11 @@ window.onload = function() {
 
     if (isSP() === true) {
       console.log('sp');
+      document.getElementById('play').setAttribute('style','display: inline-block')
+      document.getElementById('loading-img').setAttribute('style','display: none;')
       ee.addListener('publish', function(){
         document.getElementById('info').setAttribute('style','display: none')
+        document.getElementById('loading-img').setAttribute('style','display: none;')
         that.sourceNode.connect(that.analyserNode);
         that.analyserNode.connect(audioCtx.destination);
         that.sourceNode.start(0);
@@ -57,6 +60,7 @@ window.onload = function() {
     if (isSP() === false) {
       console.log('pc');
       document.getElementById('info').setAttribute('style','display: none')
+      document.getElementById('loading-img').setAttribute('style','display: inline-block;')
       this.sourceNode.connect(this.analyserNode);
       this.analyserNode.connect(audioCtx.destination);
       this.sourceNode.start(0);
@@ -160,6 +164,8 @@ window.onload = function() {
   init();
 
   document.getElementById('play').addEventListener('click', function(){
+    document.getElementById('play').setAttribute('style','display: none')
+    document.getElementById('loading-img').setAttribute('style','display: inline-block;')
     // sound from https://soundcloud.com/smokezofficial/turn-down-for-what-parisian-version
     var loader = new Loader('./DJSnake-Turn-Down-for-What-(ParisianVersion)-(no-rights-reserved!)-149855329.mp3')
     loader.playSound()
