@@ -1,5 +1,6 @@
 window.onload = function() {
   var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  var state = 0;
   var Loader = function(url) {
     this.url = url;
   };
@@ -35,14 +36,28 @@ window.onload = function() {
   };
 
   var Visualizer = function(buffer) {
+    var visualizer = this
     this.sourceNode = audioCtx.createBufferSource();
     this.sourceNode.buffer = buffer;
     this.analyserNode = audioCtx.createAnalyser();
     this.times = new Uint8Array(this.analyserNode.frequencyBinCount);
-    this.sourceNode.connect(this.analyserNode);
-    this.analyserNode.connect(audioCtx.destination);
-    this.sourceNode.start(0);
-    this.render()
+
+    if (isSP() === true && state === 2) {
+      console.log('sp');
+      document.getElementById('info').setAttribute('style','display: none')
+      visualizer.sourceNode.connect(visualizer.analyserNode);
+      visualizer.analyserNode.connect(audioCtx.destination);
+      visualizer.sourceNode.start(0);
+      visualizer.render()
+    }
+
+    if (isSP() === false) {
+      console.log('pc');
+      this.sourceNode.connect(this.analyserNode);
+      this.analyserNode.connect(audioCtx.destination);
+      this.sourceNode.start(0);
+      this.render()
+    }
   };
 
   Visualizer.prototype.render = function () {
@@ -138,7 +153,19 @@ window.onload = function() {
     }
   }
 
-  var setUpRAF = function() {
+  function isSP () {
+    if ((navigator.userAgent.indexOf('iPhone') > 0 &&
+         navigator.userAgent.indexOf('iPad') == -1) ||
+         navigator.userAgent.indexOf('iPod') > 0 ||
+         navigator.userAgent.indexOf('Android') > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  var init = function() {
+    document.getElementById('playback-btn').setAttribute('style','width: '+window.innerWidth+'px')
     var requestAnimationFrame = window.requestAnimationFrame ||
                                 window.mozRequestAnimationFrame ||
                                 window.webkitRequestAnimationFrame ||
@@ -146,8 +173,12 @@ window.onload = function() {
     window.requestAnimationFrame = requestAnimationFrame;
   };
 
-  setUpRAF();
-  // sound from https://soundcloud.com/smokezofficial/turn-down-for-what-parisian-version
-  var loader = new Loader('./DJSnake-Turn-Down-for-What-(ParisianVersion)-(no-rights-reserved!)-149855329.mp3')
-  loader.loadBuffer()
+  init();
+
+  document.getElementById('play').addEventListener('click', function(){
+    // sound from https://soundcloud.com/smokezofficial/turn-down-for-what-parisian-version
+    var loader = new Loader('./DJSnake-Turn-Down-for-What-(ParisianVersion)-(no-rights-reserved!)-149855329.mp3')
+    loader.loadBuffer()
+    state += 1
+  })
 }

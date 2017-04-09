@@ -75,7 +75,7 @@ window.onload = function() {
       console.log('sp');
       var playSp = document.getElementById('play-sp');
       playSp.setAttribute('style', 'display: block;')
-      playSp.addEventListener('touchstart', function(){
+      playSp.addEventListener('click', function(){
         playSp.setAttribute('style', 'display: none;')
         visualizer.sourceNode.connect(visualizer.analyserNode);
         visualizer.analyserNode.connect(audioCtx.destination);
