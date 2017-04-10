@@ -66,6 +66,7 @@ window.onload = function() {
   /******* rendering manager *******/
   var Visualizer = function(buffer) {
     var visualizer = this
+    this.gainNode = audioCtx.createGain();
     this.sourceNode = audioCtx.createBufferSource();
     this.sourceNode.buffer = buffer;
     this.analyserNode = audioCtx.createAnalyser();
@@ -85,6 +86,7 @@ window.onload = function() {
     } else {
       console.log('pc');
       this.sourceNode.connect(this.analyserNode);
+      this.gainNode.connect(this.analyserNode)
       this.analyserNode.connect(audioCtx.destination);
       this.sourceNode.start(0);
       this.render()
@@ -103,6 +105,7 @@ window.onload = function() {
 
   Visualizer.prototype.render = function () {
     var that = this
+    this.gainNode.gain.value = 0.1;
     if (!scene) {
       scene = new THREE.Scene()
     }
