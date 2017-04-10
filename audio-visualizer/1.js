@@ -38,6 +38,7 @@ window.onload = function() {
 
   var Visualizer = function(buffer) {
     var that = this
+    this.gainNode = audioCtx.createGain();
     this.sourceNode = audioCtx.createBufferSource();
     this.sourceNode.buffer = buffer;
     this.analyserNode = audioCtx.createAnalyser();
@@ -51,8 +52,10 @@ window.onload = function() {
         document.getElementById('info').setAttribute('style','display: none')
         document.getElementById('loading-img').setAttribute('style','display: none;')
         that.sourceNode.connect(that.analyserNode);
-        that.analyserNode.connect(audioCtx.destination);
+        that.analyserNode.connect(that.gainNode);
+        that.gainNode.connect(audioCtx.destination);
         that.sourceNode.start(0);
+        that.gainNode.gain.value = 0.1;
         that.render()
       })
     }
@@ -62,8 +65,10 @@ window.onload = function() {
       document.getElementById('info').setAttribute('style','display: none')
       document.getElementById('loading-img').setAttribute('style','display: inline-block;')
       this.sourceNode.connect(this.analyserNode);
-      this.analyserNode.connect(audioCtx.destination);
+      this.analyserNode.connect(this.gainNode);
+      this.gainNode.connect(audioCtx.destination);
       this.sourceNode.start(0);
+      this.gainNode.gain.value = 0.1;
       this.render()
     }
   };

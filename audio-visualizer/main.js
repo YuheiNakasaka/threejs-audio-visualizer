@@ -79,16 +79,19 @@ window.onload = function() {
       playSp.addEventListener('click', function(){
         playSp.setAttribute('style', 'display: none;')
         visualizer.sourceNode.connect(visualizer.analyserNode);
-        visualizer.analyserNode.connect(audioCtx.destination);
+        visualizer.analyserNode.connect(visualizer.gainNode);
+        visualizer.gainNode.connect(audioCtx.destination);
         visualizer.sourceNode.start(0);
+        visualizer.gainNode.gain.value = 0.1;
         visualizer.render()
       })
     } else {
       console.log('pc');
       this.sourceNode.connect(this.analyserNode);
-      this.gainNode.connect(this.analyserNode)
-      this.analyserNode.connect(audioCtx.destination);
+      this.analyserNode.connect(this.gainNode);
+      this.gainNode.connect(audioCtx.destination);
       this.sourceNode.start(0);
+      this.gainNode.gain.value = 0.1;
       this.render()
     }
 
@@ -105,7 +108,6 @@ window.onload = function() {
 
   Visualizer.prototype.render = function () {
     var that = this
-    this.gainNode.gain.value = 0.1;
     if (!scene) {
       scene = new THREE.Scene()
     }
